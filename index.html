@@ -1236,25 +1236,6 @@ if('serviceWorker' in navigator){
     navigator.serviceWorker.register('/gimnasio-mental/sw.js').catch(()=>{});
   });
 }
-
-// ── Fullscreen / Immersive mode ──
-function requestFS() {
-  const el = document.documentElement;
-  const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
-  if (req) req.call(el).catch(()=>{});
-}
-// Auto-request on first tap (required by browsers — can't auto-fullscreen without user gesture)
-document.addEventListener('click', function onFirstTap() {
-  requestFS();
-  document.removeEventListener('click', onFirstTap);
-}, { once: true });
-
-// Re-request if user exits fullscreen accidentally
-document.addEventListener('fullscreenchange', () => {
-  if (!document.fullscreenElement) {
-    setTimeout(requestFS, 300);
-  }
-});
 </script>
 </body>
 </html>
