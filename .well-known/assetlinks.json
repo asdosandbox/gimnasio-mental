@@ -3,6 +3,6 @@
   "target": {
     "namespace": "android_app",
     "package_name": "io.github.asdosandbox.twa",
-    "sha256_cert_fingerprints": ["20:63:5E:45:A6:CD:FD:59:E2:8E:5F:53:59:95:D6:03:97:C0:13:E2:A5:A6:E0:B5:50:C3:8A:49:25:A9:C4:B2"]
+    "sha256_cert_fingerprints": ["1C:5B:EA:30:32:3D:16:32:F6:04:46:A9:0F:A6:AC:86:1E:18:0E:7F:D4:F5:2C:C6:DA:AE:F1:9A:E1:A8:6B:30"]
   }
 }]
