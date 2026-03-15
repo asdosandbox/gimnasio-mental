@@ -6,6 +6,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#e8a045">
+<meta name="apple-mobile-web-app-title" content="Gimnasio Mental">
+<link rel="manifest" href="manifest.json">
 <title>Gimnasio Mental</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1127,6 +1130,7 @@ function checkWords(){
   res.classList.add('show');
 }
 newWords();
+if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/gimnasio-mental/sw.js').catch(()=>{});});}
 </script>
 </body>
 </html>

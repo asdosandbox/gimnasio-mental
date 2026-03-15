@@ -1,0 +1,28 @@
+{
+  "name": "Gimnasio Mental",
+  "short_name": "Gimnasio Mental",
+  "description": "Entrenamiento cognitivo: creatividad, memoria visual, pensamiento crítico y más.",
+  "start_url": "/gimnasio-mental/",
+  "scope": "/gimnasio-mental/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0e0e10",
+  "theme_color": "#e8a045",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "screenshots": []
+}
