@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Gimnasio Mental</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:    #0e0e10;
+  --bg2:   #17171a;
+  --bg3:   #1f1f24;
+  --bg4:   #27272d;
+  --border:  rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.14);
+  --gold:    #e8a045;
+  --gold2:   #f0b86a;
+  --gold-d:  rgba(232,160,69,0.13);
+  --gold-d2: rgba(232,160,69,0.22);
+  --text:  #e8e6df;
+  --text2: #9b9890;
+  --text3: #5c5a56;
+  --teal:    #4db89a; --teal-d:   rgba(77,184,154,0.13);
+  --blue:    #5b9fd8; --blue-d:   rgba(91,159,216,0.13);
+  --coral:   #d87060; --coral-d:  rgba(216,112,96,0.13);
+  --purple:  #9b86d4; --purple-d: rgba(155,134,212,0.13);
+  --green:   #7ab860; --green-d:  rgba(122,184,96,0.13);
+  --r: 10px; --r2: 14px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+html { scroll-behavior:smooth; height:100%; }
+body {
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg); color:var(--text);
+  min-height:100dvh; line-height:1.6;
+  font-size:15px; overflow-x:hidden;
+  padding-bottom: calc(72px + var(--safe-bottom));
+}
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(232,160,69,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 90%, rgba(77,184,154,0.04) 0%, transparent 55%);
+}
+
+/* ── HEADER ── */
+header {
+  position:sticky; top:0; z-index:100;
+  height:56px;
+  background:rgba(14,14,16,0.92);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  display:flex; align-items:center;
+  padding:0 16px; gap:10px;
+}
+.logo { font-family:'DM Serif Display',serif; font-size:19px; color:var(--text); letter-spacing:-.3px; }
+.logo span { color:var(--gold); font-style:italic; }
+.header-badge {
+  margin-left:auto;
+  background:var(--gold-d); border:1px solid rgba(232,160,69,0.25);
+  color:var(--gold2); font-size:10px; padding:3px 9px;
+  border-radius:20px; letter-spacing:.2px; white-space:nowrap;
+}
+.hamburger-btn {
+  display:none; background:none; border:none; cursor:pointer;
+  padding:6px; border-radius:8px; color:var(--text2);
+  font-size:20px; line-height:1;
+}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0; z-index:100;
+  background:rgba(14,14,16,0.96);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  display:flex;
+  padding-bottom:var(--safe-bottom);
+  height:calc(60px + var(--safe-bottom));
+}
+.bnav-btn {
+  flex:1; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:3px;
+  background:none; border:none; cursor:pointer;
+  padding:8px 4px; font-family:'DM Sans',sans-serif;
+  color:var(--text3); transition:color .2s;
+  -webkit-tap-highlight-color:transparent;
+}
+.bnav-btn.active { color:var(--gold2); }
+.bnav-icon { font-size:20px; line-height:1; transition:transform .15s; }
+.bnav-btn.active .bnav-icon { transform:scale(1.15); }
+.bnav-label { font-size:10px; font-weight:500; letter-spacing:.2px; }
+
+/* ── DRAWER (exercise list) ── */
+.drawer-overlay {
+  position:fixed; inset:0; z-index:200;
+  background:rgba(0,0,0,0.6);
+  backdrop-filter:blur(4px);
+  opacity:0; pointer-events:none;
+  transition:opacity .25s;
+}
+.drawer-overlay.open { opacity:1; pointer-events:all; }
+.drawer {
+  position:fixed; left:0; right:0; bottom:0; z-index:201;
+  background:var(--bg2);
+  border-top:1px solid var(--border2);
+  border-radius:20px 20px 0 0;
+  transform:translateY(100%);
+  transition:transform .3s cubic-bezier(.32,0,.67,0);
+  max-height:80dvh;
+  display:flex; flex-direction:column;
+}
+.drawer.open { transform:translateY(0); transition:transform .3s cubic-bezier(.33,1,.68,1); }
+.drawer-handle {
+  width:36px; height:4px; border-radius:2px;
+  background:var(--bg4); margin:10px auto 4px;
+  flex-shrink:0;
+}
+.drawer-title {
+  font-family:'DM Serif Display',serif;
+  font-size:18px; padding:4px 20px 14px;
+  border-bottom:1px solid var(--border); flex-shrink:0;
+  color:var(--text);
+}
+.drawer-list {
+  overflow-y:auto; padding:10px 12px 20px;
+  -webkit-overflow-scrolling:touch;
+}
+.drawer-item {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 10px; border-radius:var(--r);
+  cursor:pointer; transition:background .15s;
+}
+.drawer-item:hover, .drawer-item:active { background:var(--bg3); }
+.drawer-item.active { background:var(--gold-d2); }
+.di-icon { font-size:20px; flex-shrink:0; width:32px; text-align:center; }
+.di-text { flex:1; }
+.di-name { font-size:14px; font-weight:500; color:var(--text); }
+.di-meta { font-size:11px; color:var(--text3); margin-top:1px; }
+.di-arrow { color:var(--text3); font-size:12px; }
+.drawer-item.active .di-name { color:var(--gold2); }
+
+/* ── MAIN CONTENT ── */
+main {
+  position:relative; z-index:1;
+  padding:20px 16px 8px;
+  min-height:calc(100dvh - 56px - 60px);
+}
+.page { display:none; }
+.page.active { display:block; animation:pageIn .22s ease; }
+@keyframes pageIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── Category home screen ── */
+.cat-home { padding:4px 0; }
+.cat-title {
+  font-family:'DM Serif Display',serif;
+  font-size:24px; letter-spacing:-.4px; color:var(--text);
+  margin-bottom:6px; line-height:1.2;
+}
+.cat-title em { color:var(--gold); font-style:italic; }
+.cat-desc { font-size:13px; color:var(--text2); margin-bottom:20px; line-height:1.6; }
+.ex-list-item {
+  display:flex; align-items:center; gap:14px;
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:var(--r2); padding:14px 16px;
+  margin-bottom:10px; cursor:pointer;
+  transition:border-color .15s, background .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.ex-list-item:active { background:var(--bg3); border-color:var(--border2); }
+.eli-icon {
+  width:44px; height:44px; border-radius:var(--r);
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; flex-shrink:0;
+}
+.eli-title { font-size:14px; font-weight:500; color:var(--text); }
+.eli-meta  { font-size:12px; color:var(--text3); margin-top:2px; }
+.eli-arrow { margin-left:auto; color:var(--text3); font-size:14px; }
+
+/* ── Exercise detail ── */
+.ex-detail { display:none; }
+.ex-detail.active { display:block; animation:pageIn .2s ease; }
+.back-bar {
+  display:flex; align-items:center; gap:8px;
+  margin-bottom:16px;
+}
+.back-btn {
+  display:flex; align-items:center; gap:6px;
+  background:var(--bg3); border:1px solid var(--border2);
+  border-radius:20px; padding:6px 14px 6px 10px;
+  font-family:'DM Sans',sans-serif; font-size:13px;
+  color:var(--text2); cursor:pointer;
+  transition:background .15s;
+}
+.back-btn:active { background:var(--bg4); }
+.ex-d-title {
+  font-family:'DM Serif Display',serif;
+  font-size:22px; letter-spacing:-.4px; color:var(--text);
+  margin-bottom:4px; line-height:1.2;
+}
+.ex-d-title em { color:var(--gold); font-style:italic; }
+.ex-d-meta { font-size:12px; color:var(--text3); margin-bottom:18px; }
+
+/* ── Steps ── */
+.step { display:flex; gap:12px; margin-bottom:14px; }
+.step-n {
+  width:26px; height:26px; border-radius:50%; flex-shrink:0;
+  background:var(--bg4); border:1px solid var(--border2);
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:500; color:var(--text3);
+  font-family:'DM Mono',monospace; margin-top:1px;
+}
+.step-t { font-size:14px; color:var(--text2); line-height:1.6; padding-top:2px; }
+.step-t strong { color:var(--text); font-weight:500; }
+.step-t em { color:var(--gold2); font-style:normal; }
+
+/* ── Inputs ── */
+textarea, input[type=text] {
+  width:100%;
+  background:var(--bg3); border:1px solid var(--border2);
+  border-radius:var(--r); color:var(--text);
+  font-family:'DM Sans',sans-serif; font-size:15px;
+  padding:12px 14px; margin:8px 0; resize:vertical;
+  transition:border-color .15s;
+  -webkit-appearance:none;
+}
+textarea { min-height:90px; }
+textarea:focus, input[type=text]:focus { outline:none; border-color:rgba(232,160,69,0.5); }
+textarea::placeholder, input::placeholder { color:var(--text3); }
+
+/* ── Buttons ── */
+.btn-p {
+  background:var(--gold); color:#0e0e10;
+  border:none; border-radius:var(--r); padding:13px 20px;
+  font-family:'DM Sans',sans-serif; font-size:15px; font-weight:500;
+  cursor:pointer; transition:opacity .15s;
+  -webkit-tap-highlight-color:transparent;
+  min-height:48px;
+}
+.btn-p:active { opacity:.8; }
+.btn-p.full { width:100%; }
+.btn-s {
+  background:var(--bg3); color:var(--text2);
+  border:1px solid var(--border2); border-radius:var(--r);
+  padding:12px 18px; min-height:48px;
+  font-family:'DM Sans',sans-serif; font-size:14px;
+  cursor:pointer; transition:background .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn-s:active { background:var(--bg4); }
+.btns { display:flex; gap:8px; flex-wrap:wrap; margin:12px 0 4px; }
+.btns .btn-p, .btns .btn-s { flex:1; min-width:120px; }
+
+/* ── Panel ── */
+.panel {
+  background:var(--bg3); border-radius:var(--r2);
+  padding:18px 16px; margin:14px 0; text-align:center;
+}
+
+/* ── Timer ── */
+.timer-display {
+  font-family:'DM Mono',monospace;
+  font-size:52px; font-weight:500; color:var(--text);
+  letter-spacing:4px; line-height:1;
+}
+.timer-label { font-size:13px; color:var(--text3); margin-top:8px; }
+
+/* ── Tags ── */
+.tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:14px; }
+.tag { font-size:11px; padding:4px 11px; border-radius:20px; font-weight:400; }
+.t-gold   { background:var(--gold-d);   color:var(--gold2);  border:1px solid rgba(232,160,69,.2); }
+.t-teal   { background:var(--teal-d);   color:var(--teal);   border:1px solid rgba(77,184,154,.2); }
+.t-blue   { background:var(--blue-d);   color:var(--blue);   border:1px solid rgba(91,159,216,.2); }
+.t-coral  { background:var(--coral-d);  color:var(--coral);  border:1px solid rgba(216,112,96,.2); }
+.t-purple { background:var(--purple-d); color:var(--purple); border:1px solid rgba(155,134,212,.2); }
+.t-green  { background:var(--green-d);  color:var(--green);  border:1px solid rgba(122,184,96,.2); }
+
+/* ── Result ── */
+.result-box {
+  background:var(--bg3); border-radius:var(--r);
+  padding:14px 16px; font-size:14px; color:var(--text2);
+  line-height:1.6; margin-top:12px;
+  border-left:3px solid var(--teal); display:none;
+}
+.result-box.show { display:block; }
+
+/* ── Grid 2-col ── */
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0; }
+.grid2 > div {
+  background:var(--bg3); border:1px solid var(--border);
+  border-radius:var(--r); padding:12px;
+}
+.grid-title { font-size:13px; font-weight:500; color:var(--text); margin-bottom:4px; }
+.grid-desc  { font-size:12px; color:var(--text3); line-height:1.5; }
+
+/* ── Callout ── */
+.callout {
+  background:var(--gold-d); border:1px solid rgba(232,160,69,.2);
+  border-radius:var(--r); padding:14px 16px;
+  font-size:13px; color:var(--gold2); line-height:1.6; margin:12px 0;
+}
+
+/* ── Scene ── */
+.scene-wrap {
+  position:relative; width:100%; height:190px;
+  border-radius:var(--r); background:var(--bg4);
+  border:1px dashed var(--border2); overflow:hidden;
+}
+.scene-item { position:absolute; font-size:28px; user-select:none; }
+.recall-grid {
+  display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:12px 0;
+}
+.recall-item {
+  background:var(--bg3); border:1px solid var(--border);
+  border-radius:var(--r); padding:10px 4px; text-align:center;
+  font-size:22px; cursor:pointer; transition:border-color .15s,background .15s;
+  min-height:52px; display:flex; align-items:center; justify-content:center;
+}
+.recall-item.sel     { border-color:var(--gold);  background:var(--gold-d); }
+.recall-item.correct { border-color:var(--teal);  background:var(--teal-d); }
+.recall-item.wrong   { border-color:var(--coral); background:var(--coral-d); }
+
+/* ── Digits ── */
+.digit-big {
+  font-family:'DM Mono',monospace;
+  font-size:48px; font-weight:500; color:var(--text);
+  letter-spacing:8px; min-height:64px;
+  display:flex; align-items:center; justify-content:center;
+}
+input.digit-in {
+  font-family:'DM Mono',monospace; font-size:28px;
+  text-align:center; letter-spacing:5px;
+  min-height:unset; height:60px; margin:10px 0;
+}
+
+/* ── Major system ── */
+.major-grid {
+  display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin:12px 0;
+}
+.major-cell {
+  background:var(--bg3); border:1px solid var(--border);
+  border-radius:var(--r); padding:10px 6px; text-align:center;
+}
+.major-digit { font-family:'DM Mono',monospace; font-size:20px; font-weight:500; color:var(--gold2); }
+.major-sound { font-size:11px; color:var(--text2); margin-top:3px; }
+.major-ex    { font-size:10px; color:var(--text3); margin-top:2px; }
+
+/* ── Palace ── */
+.palace-row {
+  display:flex; align-items:flex-start; gap:10px;
+  background:var(--bg3); border:1px solid var(--border);
+  border-radius:var(--r); padding:10px 12px; margin-bottom:8px;
+}
+.palace-n {
+  width:28px; height:28px; border-radius:6px; flex-shrink:0;
+  background:var(--bg4); border:1px solid var(--border2);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'DM Mono',monospace; font-size:12px; color:var(--gold2);
+  margin-top:2px;
+}
+.palace-loc-name { font-size:13px; font-weight:500; color:var(--text); }
+.palace-img      { font-size:12px; color:var(--text3); margin-top:2px; font-style:italic; }
+
+/* ── Color grid ── */
+.color-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:5px; }
+.color-cell { aspect-ratio:1; border-radius:6px; }
+
+/* ── Chips ── */
+.chip {
+  display:inline-block; padding:6px 14px;
+  background:var(--bg3); border:1px solid var(--border);
+  border-radius:20px; font-size:13px; color:var(--text2); margin:3px;
+}
+
+/* ── STEEPV ── */
+.steep-cell {
+  background:var(--bg3); border:1px solid var(--border);
+  border-radius:var(--r); padding:12px; margin-bottom:10px;
+}
+.steep-label { font-size:14px; font-weight:500; color:var(--text); margin-bottom:3px; }
+.steep-desc  { font-size:12px; color:var(--text3); margin-bottom:8px; line-height:1.4; }
+.steep-cell textarea { min-height:56px; font-size:13px; margin:0; }
+
+/* ── FACES ── */
+.faces-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:12px 0; }
+.faces-cell {
+  background:var(--bg3); border:1px solid var(--border);
+  border-radius:var(--r); padding:10px 12px;
+}
+.faces-l { font-size:12px; font-weight:500; color:var(--gold2); margin-bottom:3px; }
+.faces-d { font-size:12px; color:var(--text3); line-height:1.4; }
+
+/* ── Combo big ── */
+.combo-big {
+  font-family:'DM Serif Display',serif;
+  font-size:22px; color:var(--text); letter-spacing:-.3px;
+  padding:10px 0 14px; line-height:1.3;
+}
+
+/* ── Porques ── */
+.pq-step {
+  background:var(--bg3); border:1px solid var(--border);
+  border-radius:var(--r); padding:10px 12px; margin-bottom:8px;
+}
+.pq-num { font-size:11px; color:var(--text3); margin-bottom:6px; font-family:'DM Mono',monospace; }
+.pq-step input { margin:0; min-height:unset; height:42px; font-size:14px; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width:0; height:0; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">Gimnasio <span>Mental</span></div>
+  <div class="header-badge">17 ejercicios</div>
+</header>
+
+<!-- MAIN -->
+<main>
+
+  <!-- ══ PAGE: CREATIVIDAD ══ -->
+  <div id="p-creatividad" class="page active">
+    <div class="cat-home">
+      <div class="cat-title">Creatividad <em>&</em> Divergencia</div>
+      <div class="cat-desc">Ejercicios para generar muchas ideas, conectar lo improbable y salir del pensamiento habitual.</div>
+      <div class="ex-list-item" onclick="showEx('creatividad','circulos')">
+        <div class="eli-icon" style="background:var(--purple-d)">🎲</div>
+        <div><div class="eli-title">30 círculos</div><div class="eli-meta">5 min · fluencia · IDEO</div></div>
+        <div class="eli-arrow">›</div>
+      </div>
+      <div class="ex-list-item" onclick="showEx('creatividad','usos')">
+        <div class="eli-icon" style="background:var(--teal-d)">🔢</div>
+        <div><div class="eli-title">100 usos alternativos</div><div class="eli-meta">7 min · divergencia · Torrance</div></div>
+        <div class="eli-arrow">›</div>
+      </div>
+      <div class="ex-list-item" onclick="showEx('creatividad','combinaciones')">
+        <div class="eli-icon" style="background:var(--gold-d)">🔀</div>
+        <div><div class="eli-title">Combinaciones imposibles</div><div class="eli-meta">10 min · pensamiento lateral · De Bono</div></div>
+        <div class="eli-arrow">›</div>
+      </div>
+    </div>
+
+    <!-- Ejercicio: 30 círculos -->
+    <div id="ex-creatividad-circulos" class="ex-detail">
+      <div class="back-bar"><button class="back-btn" onclick="backTo('creatividad')">‹ Volver</button></div>
+      <div class="ex-d-title">30 <em>Círculos</em></div>
+      <div class="ex-d-meta">5 min · fluencia creativa · clásico de IDEO</div>
+      <div class="step"><div class="step-n">1</div><div class="step-t">Dibuja 30 círculos en papel. Tienes <strong>3 minutos exactos</strong> para convertir la mayor cantidad posible en objetos reconocibles.</div></div>
+      <div class="step"><div class="step-n">2</div><div class="step-t">Cada círculo debe ser algo <strong>diferente</strong>. Rueda, sol, ojo, reloj, pizza, planeta... lo que llegue. Sin repetir.</div></div>
+      <div class="step"><div class="step-n">3</div><div class="step-t">El objetivo no es calidad — es <strong>cantidad sin juicio</strong>. La mayoría completa 10–15 la primera vez. Con práctica semanal llegas a 25+.</div></div>
+      <div class="panel">
+        <div class="timer-display" id="c30-timer">03:00</div>
+        <div class="timer-label" id="c30-label">Presiona iniciar y dibuja en papel</div>
+        <div class="btns"><button class="btn-p full" id="c30-btn" onclick="startC30()">Iniciar</button></div>
+      </div>
+      <div class="tags"><span class="tag t-purple">fluencia</span><span class="tag t-purple">flexibilidad</span><span class="tag t-purple">sin juicio</span></div>
+    </div>
+
+    <!-- Ejercicio: 100 usos -->
+    <div id="ex-creatividad-usos" class="ex-detail">
+      <div class="back-bar"><button class="back-btn" onclick="backTo('creatividad')">‹ Volver</button></div>
+      <div class="ex-d-title">100 Usos <em>Alternativos</em></div>
+      <div class="ex-d-meta">7 min · pensamiento divergente · test de Torrance</div>
+      <div class="step"><div class="step-n">1</div><div class="step-t">El generador te da un objeto común. En 5 minutos escribe la mayor cantidad de usos alternativos posibles. <strong>No filtres.</strong></div></div>
+      <div class="step"><div class="step-n">2</div><div class="step-t">Apunta a que al menos el <strong>30% sean inusuales</strong>. Úsalo como arma, instrumento, edificio para hormigas — todo vale.</div></div>
+      <div class="panel">
+        <div style="font-size:22px;font-weight:500;color:var(--text);margin-bottom:14px" id="obj-display">🧱 Un ladrillo</div>
+        <div class="timer-display" id="usos-timer">05:00</div>
+        <div class="timer-label" id="usos-label">Presiona iniciar</div>
+        <div class="btns">
+          <button class="btn-p" id="usos-btn" onclick="startUsos()">Iniciar</button>
+          <button class="btn-s" onclick="newObj()">Otro objeto</button>
+        </div>
+      </div>
+      <textarea placeholder="Lista tus usos alternativos (uno por línea)..."></textarea>
+      <div class="tags"><span class="tag t-teal">divergencia</span><span class="tag t-teal">originalidad</span></div>
+    </div>
+
+    <!-- Ejercicio: combinaciones -->
+    <div id="ex-creatividad-combinaciones" class="ex-detail">
+      <div class="back-bar"><button class="back-btn" onclick="backTo('creatividad')">‹ Volver</button></div>
+      <div class="ex-d-title">Combinaciones <em>Imposibles</em></div>
+      <div class="ex-d-meta">10 min · pensamiento lateral · Edward de Bono</div>
+      <div class="step"><div class="step-n">1</div><div class="step-t">El generador te da dos palabras aparentemente <strong>incompatibles</strong>.</div></div>
+      <div class="step"><div class="step-n">2</div><div class="step-t">Escribe al menos <strong>5 formas</strong> en que podrían conectarse, combinarse o crear algo nuevo juntas.</div></div>
+      <div class="step"><div class="step-n">3</div><div class="step-t"><strong>Por qué funciona:</strong> el cerebro tiende a patrones familiares. Forzarlo a conectar lo incompatible activa redes neuronales poco usadas.</div></div>
+      <div class="panel">
+        <div class="combo-big" id="combo-display">Submarino + Biblioteca</div>
+        <button class="btn-p full" onclick="newCombo()">Nueva combinación</button>
+      </div>
+      <textarea placeholder="Escribe tus 5+ conexiones entre los dos conceptos..."></textarea>
+      <div class="tags"><span class="tag t-gold">pensamiento lateral</span><span class="tag t-gold">asociación remota</span></div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: CRÍTICO ══ -->
+  <div id="p-critico" class="page">
+    <div class="cat-home">
+      <div class="cat-title">Pensamiento <em>Crítico</em></div>
+      <div class="cat-desc">Analiza problemas desde múltiples ángulos, encuentra la causa raíz y vence el sesgo de confirmación.</div>
+      <div class="ex-list-item" onclick="showEx('critico','sombreros')">
+        <div class="eli-icon" style="background:var(--blue-d)">🎩</div>
+        <div><div class="eli-title">6 sombreros de De Bono</div><div class="eli-meta">15 min · perspectivas múltiples</div></div>
+        <div class="eli-arrow">›</div>
+      </div>
+      <div class="ex-list-item" onclick="showEx('critico','porques')">
+        <div class="eli-icon" style="background:var(--coral-d)">🔍</div>
+        <div><div class="eli-title">5 porqués</div><div class="eli-meta">8 min · causa raíz · Toyota</div></div>
+        <div class="eli-arrow">›</div>
+      </div>
+      <div class="ex-list-item" onclick="showEx('critico','diablo')">
+        <div class="eli-icon" style="background:var(--green-d)">🪞</div>
+        <div><div class="eli-title">Abogado del diablo</div><div class="eli-meta">10 min · sesgo de confirmación</div></div>
+        <div class="eli-arrow">›</div>
+      </div>
+    </div>
+
+    <!-- Sombreros -->
+    <div id="ex-critico-sombreros" class="ex-detail">
+      <div class="back-bar"><button class="back-btn" onclick="backTo('critico')">‹ Volver</button></div>
+      <div class="ex-d-title">Los <em>6 Sombreros</em></div>
+      <div class="ex-d-meta">15 min · perspectivas múltiples · De Bono</div>
+      <div class="step"><div class="step-n">1</div><div class="step-t">Escribe un problema real. Analízalo ~2 minutos en cada sombrero.</div></div>
+      <textarea placeholder="Tu problema o decisión..."></textarea>
+      <div class="grid2">
+        <div><div class="grid-title">⚪ Blanco</div><div class="grid-desc">Datos y hechos. ¿Qué sé? ¿Qué me falta?</div></div>
+        <div><div class="grid-title">🔴 Rojo</div><div class="grid-desc">Emociones. ¿Qué siento? ¿Qué intuyo?</div></div>
+        <div><div class="grid-title">⚫ Negro</div><div class="grid-desc">Riesgos. ¿Qué puede fallar?</div></div>
+        <div><div class="grid-title">🟡 Amarillo</div><div class="grid-desc">Optimismo. ¿Qué valor hay aquí?</div></div>
+        <div><div class="grid-title">🟢 Verde</div><div class="grid-desc">Creatividad. ¿Qué alternativas hay?</div></div>
+        <div><div class="grid-title">🔵 Azul</div><div class="grid-desc">Proceso. ¿Cuál es el siguiente paso?</div></div>
+      </div>
+      <textarea style="min-height:120px" placeholder="Notas de cada sombrero..."></textarea>
+      <div class="tags"><span class="tag t-blue">perspectivas</span><span class="tag t-blue">decisiones</span></div>
+    </div>
+
+    <!-- 5 porqués -->
+    <div id="ex-critico-porques" class="ex-detail">
+      <div class="back-bar"><button class="back-btn" onclick="backTo('critico')">‹ Volver</button></div>
+      <div class="ex-d-title">Los <em>5 Porqués</em></div>
+      <div class="ex-d-meta">8 min · causa raíz · Toyota Production System</div>
+      <div class="step"><div class="step-n">1</div><div class="step-t">Escribe un problema reciente. Luego pregunta "¿Por qué?" 5 veces, cada vez sobre la respuesta anterior.</div></div>
+      <div id="pq-container"></div>
+      <div class="btns">
+        <button class="btn-s" id="pq-add" onclick="addPorque()">+ Siguiente por qué</button>
+        <button class="btn-s" onclick="resetPorques()">Reiniciar</button>
+      </div>
+      <div id="pq-result" class="result-box"></div>
+      <div class="tags"><span class="tag t-coral">causa raíz</span><span class="tag t-coral">análisis sistémico</span></div>
+    </div>
+
+    <!-- Abogado del diablo -->
+    <div id="ex-critico-diablo" class="ex-detail">
+      <div class="back-bar"><button class="back-btn" onclick="backTo('critico')">‹ Volver</button></div>
+      <div class="ex-d-title">Abogado <em>del Diablo</em></div>
+      <div class="ex-d-meta">10 min · pensamiento antagónico</div>
+      <div class="step"><div class="step-n">1</div><div class="step-t">Escribe una idea o creencia que consideres sólida.</div></div>
+      <div class="step"><div class="step-n">2</div><div class="step-t">Arguméntate <strong>completamente en contra</strong> durante 5 minutos. No des concesiones. Tu trabajo es destruirla.</div></div>
+      <div class="step"><div class="step-n">3</div><div class="step-t">Al terminar: ¿algún argumento tiene mérito real? ¿Deberías modificar tu posición?</div></div>
+      <textarea placeholder="Tu idea o creencia..."></textarea>
+      <textarea style="min-height:110px" placeholder="Argumentos en contra (sé despiadado)..."></textarea>
+      <div class="tags"><span class="tag t-green">sesgo cognitivo</span><span class="tag t-green">pensamiento crítico</span></div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: RIESGOS ══ -->
+  <div id="p-riesgos" class="page">
+    <div class="cat-home">
+      <div class="cat-title">Riesgos <em>&</em> Oportunidades</div>
+      <div class="cat-desc">Anticipa lo que puede fallar y detecta oportunidades antes que otros.</div>
+      <div class="ex-list-item" onclick="showEx('riesgos','premortem')">
+        <div class="eli-icon" style="background:var(--gold-d)">⚡</div>
+        <div><div class="eli-title">Premortem</div><div class="eli-meta">10 min · anticipación · Gary Klein</div></div>
+        <div class="eli-arrow">›</div>
+      </div>
+      <div class="ex-list-item" onclick="showEx('riesgos','steepv')">
+        <div class="eli-icon" style="background:var(--purple-d)">🌐</div>
+        <div><div class="eli-title">Mapa STEEPV</div><div class="eli-meta">15 min · visión sistémica · estrategia</div></div>
+        <div class="eli-arrow">›</div>
+      </div>
+      <div class="ex-list-item" onclick="showEx('riesgos','brainstorm')">
+        <div class="eli-icon" style="background:var(--teal-d)">⚡</div>
+        <div><div class="eli-title">Brainstorm 2 minutos</div><div class="eli-meta">2 min · velocidad · fluidez</div></div>
+        <div class="eli-arrow">›</div>
+      </div>
+      <div class="ex-list-item" onclick="showEx('riesgos','reframe')">
+        <div class="eli-icon" style="background:var(--blue-d)">🧩</div>
+        <div><div class="eli-title">Reformulación rápida</div><div class="eli-meta">5 min · marcos mentales</div></div>
+        <div class="eli-arrow">›</div>
+      </div>
+    </div>
+
+    <!-- Premortem -->
+    <div id="ex-riesgos-premortem" class="ex-detail">
+      <div class="back-bar"><button class="back-btn" onclick="backTo('riesgos')">‹ Volver</button></div>
+      <div class="ex-d-title"><em>Premortem</em></div>
+      <div class="ex-d-meta">10 min · anticipación de riesgos · Gary Klein</div>
+      <div class="step"><div class="step-n">1</div><div class="step-t">Piensa en un proyecto o decisión importante que estás a punto de iniciar.</div></div>
+      <div class="step"><div class="step-n">2</div><div class="step-t"><strong>Imagina que ya pasó un año y fracasó completamente.</strong> Escribe todas las razones. Sé específico.</div></div>
+      <div class="step"><div class="step-n">3</div><div class="step-t">Revisa: ¿cuáles de esos riesgos puedes mitigar <em>hoy</em>?</div></div>
+      <textarea placeholder="El proyecto o decisión..."></textarea>
+      <textarea style="min-height:110px" placeholder="Razones por las que fracasó (escribe como si ya hubiera pasado)..."></textarea>
+      <textarea placeholder="Mitigaciones posibles..."></textarea>
+      <div class="tags"><span class="tag t-gold">anticipación</span><span class="tag t-gold">gestión de riesgo</span></div>
+    </div>
+
+    <!-- STEEPV -->
+    <div id="ex-riesgos-steepv" class="ex-detail">
+      <div class="back-bar"><button class="back-btn" onclick="backTo('riesgos')">‹ Volver</button></div>
+      <div class="ex-d-title">Mapa <em>STEEPV</em></div>
+      <div class="ex-d-meta">15 min · visión sistémica · estrategia</div>
+      <div class="step"><div class="step-n">1</div><div class="step-t">Elige un contexto: tu trabajo, proyecto o carrera. Analiza las fuerzas externas que lo afectan.</div></div>
+      <div class="steep-cell"><div class="steep-label">🏛️ Social</div><div class="steep-desc">Tendencias culturales, demografía, valores</div><textarea placeholder="Fuerzas sociales..."></textarea></div>
+      <div class="steep-cell"><div class="steep-label">⚙️ Tecnológico</div><div class="steep-desc">Innovaciones, automatización, IA</div><textarea placeholder="Fuerzas tecnológicas..."></textarea></div>
+      <div class="steep-cell"><div class="steep-label">💰 Económico</div><div class="steep-desc">Mercado, tasas, inflación, empleo</div><textarea placeholder="Fuerzas económicas..."></textarea></div>
+      <div class="steep-cell"><div class="steep-label">🌿 Ecológico</div><div class="steep-desc">Clima, sostenibilidad, recursos</div><textarea placeholder="Fuerzas ecológicas..."></textarea></div>
+      <div class="steep-cell"><div class="steep-label">📋 Político</div><div class="steep-desc">Regulaciones, normas, gobierno</div><textarea placeholder="Fuerzas políticas..."></textarea></div>
+      <div class="steep-cell"><div class="steep-label">🧠 Valores</div><div class="steep-desc">Cambios de mentalidad, ética, cultura</div><textarea placeholder="Fuerzas de valores..."></textarea></div>
+      <div class="step"><div class="step-n">✦</div><div class="step-t">Marca con <strong>+</strong> las oportunidades y <strong>−</strong> los riesgos. ¿Cuál es la intersección entre una oportunidad y lo que haces bien?</div></div>
+      <div class="tags"><span class="tag t-purple">visión sistémica</span><span class="tag t-purple">estrategia</span></div>
+    </div>
+
+    <!-- Brainstorm -->
+    <div id="ex-riesgos-brainstorm" class="ex-detail">
+      <div class="back-bar"><button class="back-btn" onclick="backTo('riesgos')">‹ Volver</button></div>
+      <div class="ex-d-title">Brainstorm <em>2 Minutos</em></div>
+      <div class="ex-d-meta">2 min · velocidad · presión productiva</div>
+      <div class="step"><div class="step-n">1</div><div class="step-t">Al iniciar, escribe <strong>sin parar</strong>. Si te quedas en blanco, escribe "no sé qué escribir" y sigue. Nunca pares.</div></div>
+      <div class="panel">
+        <div style="font-size:14px;color:var(--text);font-weight:500;margin-bottom:14px;line-height:1.5" id="bstorm-tema">Ideas para mejorar la comunicación en equipos de trabajo</div>
+        <div class="timer-display" id="bstorm-timer">02:00</div>
+        <div class="timer-label" id="bstorm-label">Presiona iniciar</div>
+        <div class="btns">
+          <button class="btn-p" id="bstorm-btn" onclick="startBstorm()">Iniciar</button>
+          <button class="btn-s" onclick="newTema()">Otro tema</button>
+        </div>
+      </div>
+      <textarea id="bstorm-area" style="min-height:130px" placeholder="Escribe sin parar..."></textarea>
+      <div id="bstorm-res" class="result-box"></div>
+      <div class="tags"><span class="tag t-teal">fluidez</span><span class="tag t-teal">sin juicio</span></div>
+    </div>
+
+    <!-- Reframe -->
+    <div id="ex-riesgos-reframe" class="ex-detail">
+      <div class="back-bar"><button class="back-btn" onclick="backTo('riesgos')">‹ Volver</button></div>
+      <div class="ex-d-title">Reformulación <em>Rápida</em></div>
+      <div class="ex-d-meta">5 min · flexibilidad cognitiva · marcos mentales</div>
+      <div class="step"><div class="step-n">1</div><div class="step-t">Se te da un enunciado negativo. Reformúlalo de <strong>5 formas distintas</strong> — cambiando encuadre, ángulo o escala.</div></div>
+      <div class="panel">
+        <div id="reframe-prompt" style="font-size:15px;color:var(--gold2);font-style:italic;line-height:1.5"></div>
+        <button class="btn-s full" style="margin-top:14px" onclick="newReframe()">Nuevo enunciado</button>
+      </div>
+      <textarea style="min-height:120px" placeholder="Escribe tus 5 reformulaciones distintas del mismo problema..."></textarea>
+      <div class="tags"><span class="tag t-blue">reframing</span><span class="tag t-blue">marcos mentales</span></div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: MEMORIA VISUAL ══ -->
+  <div id="p-visual" class="page">
+    <div class="cat-home">
+      <div class="cat-title">Memoria <em>Visual</em></div>
+      <div class="cat-desc">Entrena tu capacidad de retener imágenes, detalles y escenas con precisión fotográfica.</div>
+      <div class="ex-list-item" onclick="showEx('visual','escena')">
+        <div class="eli-icon" style="background:var(--purple-d)">👁️</div>
+        <div><div class="eli-title">Fotografía de escena</div><div class="eli-meta">3 min · memoria visual · posición</div></div>
+        <div class="eli-arrow">›</div>
+      </div>
+      <div class="ex-list-item" onclick="showEx('visual','grid')">
+        <div class="eli-icon" style="background:var(--teal-d)">🎯</div>
+        <div><div class="eli-title">Spot the difference</div><div class="eli-meta">5 min · cambios visuales · atención</div></div>
+        <div class="eli-arrow">›</div>
+      </div>
+      <div class="ex-list-item" onclick="showEx('visual','soda')">
+        <div class="eli-icon" style="background:var(--green-d)">🔄</div>
+        <div><div class="eli-title">Técnica SODA</div><div class="eli-meta">Diario · observación activa · Sherlock</div></div>
+        <div class="eli-arrow">›</div>
+      </div>
+      <div class="ex-list-item" onclick="showEx('visual','faces')">
+        <div class="eli-icon" style="background:var(--coral-d)">🕵️</div>
+        <div><div class="eli-title">Protocolo FACES</div><div class="eli-meta">Diario · personas · memoria episódica</div></div>
+        <div class="eli-arrow">›</div>
+      </div>
+    </div>
+
+    <!-- Escena -->
+    <div id="ex-visual-escena" class="ex-detail">
+      <div class="back-bar"><button class="back-btn" onclick="backTo('visual')">‹ Volver</button></div>
+      <div class="ex-d-title">Fotografía <em>Mental</em></div>
+      <div class="ex-d-meta">2–3 min · memoria visual espacial</div>
+      <div class="step"><div class="step-n">1</div><div class="step-t">Observa la escena y memoriza la <strong>posición exacta</strong> de cada objeto durante 15 segundos.</div></div>
+      <div class="panel" style="padding:14px">
+        <div id="scene-wrap" class="scene-wrap"></div>
+        <div class="timer-display" style="margin-top:12px;font-size:40px" id="scene-timer">—</div>
+        <div class="timer-label" id="scene-status">Presiona iniciar</div>
+        <div class="btns">
+          <button class="btn-p" id="scene-btn" onclick="sceneAction()">Iniciar</button>
+          <button class="btn-s" onclick="newScene()">Nueva escena</button>
+        </div>
+      </div>
+      <div id="scene-recall" style="display:none">
+        <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:10px">¿Cuáles objetos estaban en la escena?</div>
+        <div class="recall-grid" id="recall-grid"></div>
+        <button class="btn-p full" onclick="checkScene()">Verificar</button>
+      </div>
+      <div id="scene-result" class="result-box"></div>
+      <div class="tags"><span class="tag t-purple">memoria visual</span><span class="tag t-purple">posición espacial</span></div>
+    </div>
+
+    <!-- Grid -->
+    <div id="ex-visual-grid" class="ex-detail">
+      <div class="back-bar"><button class="back-btn" onclick="backTo('visual')">‹ Volver</button></div>
+      <div class="ex-d-title">Spot <em>the Difference</em></div>
+      <div class="ex-d-meta">5 min · atención al cambio visual</div>
+      <div class="step"><div class="step-n">1</div><div class="step-t">Memoriza la cuadrícula A. Luego revela B y detecta los cambios sin volver a mirar A.</div></div>
+      <div class="panel">
+        <div style="display:flex;gap:16px;justify-content:center">
+          <div><div style="font-size:11px;color:var(--text3);margin-bottom:8px;text-align:center">Cuadrícula A</div><div class="color-grid" id="grid-a" style="width:148px"></div></div>
+          <div><div style="font-size:11px;color:var(--text3);margin-bottom:8px;text-align:center">Cuadrícula B</div><div class="color-grid" id="grid-b" style="width:148px;filter:blur(8px);pointer-events:none"></div></div>
+        </div>
+        <div class="timer-label" style="margin-top:12px" id="grid-status">Memoriza A, luego revela B</div>
+        <div class="btns">
+          <button class="btn-p" id="grid-btn" onclick="gridAction()">Revelar B</button>
+          <button class="btn-s" onclick="newGrid()">Nueva cuadrícula</button>
+        </div>
+      </div>
+      <textarea style="min-height:60px" placeholder="¿Cuántos cambios encontraste y cuáles son?"></textarea>
+      <div id="grid-result" class="result-box"></div>
+      <div class="tags"><span class="tag t-teal">cambios visuales</span><span class="tag t-teal">atención</span></div>
+    </div>
+
+    <!-- SODA -->
+    <div id="ex-visual-soda" class="ex-detail">
+      <div class="back-bar"><button class="back-btn" onclick="backTo('visual')">‹ Volver</button></div>
+      <div class="ex-d-title">Técnica <em>SODA</em></div>
+      <div class="ex-d-meta">Diario · 3× al día durante 21 días</div>
+      <div class="step"><div class="step-n">S</div><div class="step-t"><strong>Stop (Detente).</strong> Elige un objeto o lugar. Míralo <em>30 segundos completos</em> sin apartar la mirada.</div></div>
+      <div class="step"><div class="step-n">O</div><div class="step-t"><strong>Observe (Observa).</strong> Identifica: colores exactos, texturas, posición relativa, sombras, tamaño, detalles inusuales.</div></div>
+      <div class="step"><div class="step-n">D</div><div class="step-t"><strong>Describe (Describe).</strong> Cierra los ojos y describe en voz baja todo lo que recuerdas. Sé específico.</div></div>
+      <div class="step"><div class="step-n">A</div><div class="step-t"><strong>Affirm (Confirma).</strong> Abre los ojos y verifica. ¿Qué olvidaste? Cada revisión fortalece el trazo neural.</div></div>
+      <textarea placeholder="Notas de tu práctica SODA de hoy..."></textarea>
+      <div class="tags"><span class="tag t-green">hábito diario</span><span class="tag t-green">observación activa</span></div>
+    </div>
+
+    <!-- FACES -->
+    <div id="ex-visual-faces" class="ex-detail">
+      <div class="back-bar"><button class="back-btn" onclick="backTo('visual')">‹ Volver</button></div>
+      <div class="ex-d-title">Protocolo <em>FACES</em></div>
+      <div class="ex-d-meta">Diario · memoria episódica · personas</div>
+      <div class="step"><div class="step-n">1</div><div class="step-t">En tu próxima interacción, observa a la persona durante los primeros <strong>60 segundos</strong> con intención.</div></div>
+      <div class="faces-grid">
+        <div class="faces-cell"><div class="faces-l">F — Facciones</div><div class="faces-d">Rostro, ojos, rasgos</div></div>
+        <div class="faces-cell"><div class="faces-l">A — Apariencia</div><div class="faces-d">Ropa, colores, estilo</div></div>
+        <div class="faces-cell"><div class="faces-l">C — Contextura</div><div class="faces-d">Altura, complexión, postura</div></div>
+        <div class="faces-cell"><div class="faces-l">E — Expresión</div><div class="faces-d">Estado emocional, tensión</div></div>
+        <div class="faces-cell"><div class="faces-l">S — Señales</div><div class="faces-d">Objetos, gestos, movimientos</div></div>
+        <div class="faces-cell"><div class="faces-l">+ Extra</div><div class="faces-d">Algo único de esta persona</div></div>
+      </div>
+      <textarea placeholder="Escribe lo que recuerdas usando FACES..."></textarea>
+      <div class="tags"><span class="tag t-coral">memoria episódica</span><span class="tag t-coral">observación</span></div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: MEMORIA ══ -->
+  <div id="p-memoria" class="page">
+    <div class="cat-home">
+      <div class="cat-title">Técnicas <em>de Memoria</em></div>
+      <div class="cat-desc">Números, palabras, listas — sistemas probados por campeones mundiales de memoria.</div>
+      <div class="ex-list-item" onclick="showEx('memoria','digitos')">
+        <div class="eli-icon" style="background:var(--gold-d)">🔢</div>
+        <div><div class="eli-title">Span de dígitos</div><div class="eli-meta">3 min · memoria de trabajo · progresivo</div></div>
+        <div class="eli-arrow">›</div>
+      </div>
+      <div class="ex-list-item" onclick="showEx('memoria','mayor')">
+        <div class="eli-icon" style="background:var(--blue-d)">🔗</div>
+        <div><div class="eli-title">Sistema Mayor</div><div class="eli-meta">Técnica · memoristas · números</div></div>
+        <div class="eli-arrow">›</div>
+      </div>
+      <div class="ex-list-item" onclick="showEx('memoria','palacio')">
+        <div class="eli-icon" style="background:var(--blue-d)">🏛️</div>
+        <div><div class="eli-title">Palacio de memoria</div><div class="eli-meta">15 min · método loci · milenario</div></div>
+        <div class="eli-arrow">›</div>
+      </div>
+      <div class="ex-list-item" onclick="showEx('memoria','historias')">
+        <div class="eli-icon" style="background:var(--green-d)">🖼️</div>
+        <div><div class="eli-title">Historias encadenadas</div><div class="eli-meta">10 min · narrativa · listas largas</div></div>
+        <div class="eli-arrow">›</div>
+      </div>
+      <div class="ex-list-item" onclick="showEx('memoria','palabras')">
+        <div class="eli-icon" style="background:var(--teal-d)">📝</div>
+        <div><div class="eli-title">Lista de palabras</div><div class="eli-meta">10 min · codificación · Ebbinghaus</div></div>
+        <div class="eli-arrow">›</div>
+      </div>
+    </div>
+
+    <!-- Dígitos -->
+    <div id="ex-memoria-digitos" class="ex-detail">
+      <div class="back-bar"><button class="back-btn" onclick="backTo('memoria')">‹ Volver</button></div>
+      <div class="ex-d-title">Span <em>Numérico</em></div>
+      <div class="ex-d-meta">Progresivo · el promedio adulto retiene 7±2 dígitos</div>
+      <div class="step"><div class="step-n">1</div><div class="step-t">Aparece una secuencia de dígitos. Memorízala. Cuando desaparezca, escríbela. Cada acierto sube un nivel.</div></div>
+      <div class="panel">
+        <div style="font-size:13px;color:var(--text3);margin-bottom:8px" id="digit-level">Nivel 1 — 3 dígitos</div>
+        <div class="digit-big" id="digit-display">—</div>
+        <input type="text" class="digit-in" id="digit-input" placeholder="Escribe la secuencia" style="display:none" inputmode="numeric">
+        <div class="btns">
+          <button class="btn-p" id="digit-btn" onclick="digitAction()">Mostrar</button>
+          <button class="btn-s" onclick="resetDigit()">Reiniciar</button>
+        </div>
+        <div style="font-size:12px;color:var(--text3);margin-top:10px" id="digit-status">Entrena hasta 12+ dígitos</div>
+      </div>
+      <div id="digit-result" class="result-box"></div>
+      <div class="tags"><span class="tag t-gold">memoria de trabajo</span><span class="tag t-gold">progresivo</span></div>
+    </div>
+
+    <!-- Sistema Mayor -->
+    <div id="ex-memoria-mayor" class="ex-detail">
+      <div class="back-bar"><button class="back-btn" onclick="backTo('memoria')">‹ Volver</button></div>
+      <div class="ex-d-title">Sistema <em>Mayor</em></div>
+      <div class="ex-d-meta">El sistema más poderoso para memorizar números</div>
+      <div class="step"><div class="step-n">!</div><div class="step-t">Convierte cada dígito en un <strong>sonido consonante</strong> y construyes imágenes con esos sonidos. Los números se vuelven películas mentales.</div></div>
+      <div class="major-grid">
+        <div class="major-cell"><div class="major-digit">0</div><div class="major-sound">S, Z</div><div class="major-ex">ciSo</div></div>
+        <div class="major-cell"><div class="major-digit">1</div><div class="major-sound">T, D</div><div class="major-ex">Tio</div></div>
+        <div class="major-cell"><div class="major-digit">2</div><div class="major-sound">N</div><div class="major-ex">Nido</div></div>
+        <div class="major-cell"><div class="major-digit">3</div><div class="major-sound">M</div><div class="major-ex">Mano</div></div>
+        <div class="major-cell"><div class="major-digit">4</div><div class="major-sound">R</div><div class="major-ex">Roca</div></div>
+        <div class="major-cell"><div class="major-digit">5</div><div class="major-sound">L</div><div class="major-ex">Lava</div></div>
+        <div class="major-cell"><div class="major-digit">6</div><div class="major-sound">J, CH</div><div class="major-ex">Joya</div></div>
+        <div class="major-cell"><div class="major-digit">7</div><div class="major-sound">K, G</div><div class="major-ex">Gato</div></div>
+        <div class="major-cell"><div class="major-digit">8</div><div class="major-sound">F, V</div><div class="major-ex">Foca</div></div>
+        <div class="major-cell"><div class="major-digit">9</div><div class="major-sound">P, B</div><div class="major-ex">Pipa</div></div>
+      </div>
+      <div class="callout"><strong>Ejemplo:</strong> 3142 → M-T-R-N → <em>"Mi teléfono suena"</em> (imagen vívida). Para recordar el número, reconstruyes la imagen y extraes las consonantes.</div>
+      <textarea placeholder="Practica: convierte en imágenes: 1984 — 2027 — 5631 — 8042"></textarea>
+      <div class="tags"><span class="tag t-blue">sistema mayor</span><span class="tag t-blue">codificación</span></div>
+    </div>
+
+    <!-- Palacio -->
+    <div id="ex-memoria-palacio" class="ex-detail">
+      <div class="back-bar"><button class="back-btn" onclick="backTo('memoria')">‹ Volver</button></div>
+      <div class="ex-d-title">Palacio <em>de Memoria</em></div>
+      <div class="ex-d-meta">15 min · método loci · campeones mundiales de memoria</div>
+      <div class="step"><div class="step-n">1</div><div class="step-t"><strong>Elige tu palacio:</strong> un lugar que conozcas perfectamente. Debe tener una ruta fija con al menos 10 puntos.</div></div>
+      <div class="step"><div class="step-n">2</div><div class="step-t"><strong>Define tus loci:</strong> puntos de anclaje en orden. Para cada dato a memorizar, crea una imagen <strong>absurda y vívida</strong> en ese punto.</div></div>
+      <div id="palace-loci" style="margin:12px 0"></div>
+      <div class="btns">
+        <button class="btn-s" onclick="addLocus()">+ Agregar punto</button>
+        <button class="btn-p" onclick="showPalaceDemo()">Ver ejemplo</button>
+      </div>
+      <div id="palace-demo" style="display:none;margin:12px 0"></div>
+      <div class="tags"><span class="tag t-blue">método loci</span><span class="tag t-blue">memoria espacial</span></div>
+    </div>
+
+    <!-- Historias -->
+    <div id="ex-memoria-historias" class="ex-detail">
+      <div class="back-bar"><button class="back-btn" onclick="backTo('memoria')">‹ Volver</button></div>
+      <div class="ex-d-title">Historias <em>Encadenadas</em></div>
+      <div class="ex-d-meta">10 min · memoria narrativa · listas largas</div>
+      <div class="step"><div class="step-n">1</div><div class="step-t">10 palabras al azar. Construye una <strong>historia absurda</strong> que las conecte en orden. Con acción, emoción y movimiento.</div></div>
+      <div class="step"><div class="step-n">2</div><div class="step-t"><strong>Regla:</strong> cuanto más ridícula, más dura en la memoria. Un elefante no camina — aplasta un rascacielos llorando mermelada.</div></div>
+      <div class="panel">
+        <div id="chain-words" style="min-height:40px;display:flex;flex-wrap:wrap;gap:5px;justify-content:center"></div>
+        <button class="btn-p full" style="margin-top:14px" onclick="genChain()">Generar palabras</button>
+      </div>
+      <textarea style="min-height:110px" placeholder="Escribe tu historia absurda conectando todas las palabras en orden..."></textarea>
+      <div class="tags"><span class="tag t-green">narrativa</span><span class="tag t-green">encadenamiento</span></div>
+    </div>
+
+    <!-- Palabras -->
+    <div id="ex-memoria-palabras" class="ex-detail">
+      <div class="back-bar"><button class="back-btn" onclick="backTo('memoria')">‹ Volver</button></div>
+      <div class="ex-d-title">Lista <em>de Palabras</em></div>
+      <div class="ex-d-meta">60 segundos · memoriza 12 palabras en orden</div>
+      <div class="panel">
+        <div id="words-display" style="min-height:40px;display:flex;flex-wrap:wrap;gap:5px;justify-content:center"></div>
+        <div class="timer-display" style="margin-top:12px;font-size:44px" id="words-timer">01:00</div>
+        <div class="timer-label" id="words-status">Presiona iniciar y memoriza</div>
+        <div class="btns">
+          <button class="btn-p" id="words-btn" onclick="wordsAction()">Iniciar</button>
+          <button class="btn-s" onclick="newWords()">Nueva lista</button>
+        </div>
+      </div>
+      <textarea style="min-height:90px" id="words-input" placeholder="Escribe las 12 palabras en orden..." disabled></textarea>
+      <button class="btn-p full" id="words-check" onclick="checkWords()" style="display:none">Verificar</button>
+      <div id="words-result" class="result-box"></div>
+      <div class="callout" style="margin-top:14px"><strong>Técnica VAI:</strong> <em>V</em>isual exagerado + <em>A</em>cción + <em>I</em>nteracción emocional para cada palabra.</div>
+      <div class="tags"><span class="tag t-teal">codificación</span><span class="tag t-teal">repaso espaciado</span></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="bnav-btn active" onclick="switchPage('creatividad',this)">
+    <div class="bnav-icon">✦</div>
+    <div class="bnav-label">Creatividad</div>
+  </button>
+  <button class="bnav-btn" onclick="switchPage('critico',this)">
+    <div class="bnav-icon">🎩</div>
+    <div class="bnav-label">Crítico</div>
+  </button>
+  <button class="bnav-btn" onclick="switchPage('riesgos',this)">
+    <div class="bnav-icon">⚡</div>
+    <div class="bnav-label">Riesgos</div>
+  </button>
+  <button class="bnav-btn" onclick="switchPage('visual',this)">
+    <div class="bnav-icon">👁️</div>
+    <div class="bnav-label">Visual</div>
+  </button>
+  <button class="bnav-btn" onclick="switchPage('memoria',this)">
+    <div class="bnav-icon">🏛️</div>
+    <div class="bnav-label">Memoria</div>
+  </button>
+</nav>
+
+<script>
+// ── NAV ──
+let currentPage = 'creatividad';
+function switchPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('p-' + id).classList.add('active');
+  btn.classList.add('active');
+  currentPage = id;
+  // show home, hide all ex-detail
+  backTo(id);
+  window.scrollTo(0,0);
+}
+function showEx(cat, ex) {
+  const home = document.querySelector(`#p-${cat} .cat-home`);
+  document.querySelectorAll(`#p-${cat} .ex-detail`).forEach(d => d.classList.remove('active'));
+  if (home) home.style.display = 'none';
+  const detail = document.getElementById(`ex-${cat}-${ex}`);
+  if (detail) detail.classList.add('active');
+  window.scrollTo(0,0);
+}
+function backTo(cat) {
+  const home = document.querySelector(`#p-${cat} .cat-home`);
+  document.querySelectorAll(`#p-${cat} .ex-detail`).forEach(d => d.classList.remove('active'));
+  if (home) home.style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+// ── 30 CIRCLES ──
+let c30Int = null;
+function startC30() {
+  if (c30Int) { clearInterval(c30Int); c30Int=null; document.getElementById('c30-btn').textContent='Iniciar'; document.getElementById('c30-timer').textContent='03:00'; document.getElementById('c30-label').textContent='Presiona iniciar y dibuja en papel'; return; }
+  let t=180; document.getElementById('c30-btn').textContent='Detener';
+  c30Int = setInterval(()=>{ t--; const m=Math.floor(t/60),s=t%60; document.getElementById('c30-timer').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0'); if(t<=60)document.getElementById('c30-label').textContent='Último minuto — fuerza ideas raras'; if(t<=0){clearInterval(c30Int);c30Int=null;document.getElementById('c30-btn').textContent='Reiniciar';document.getElementById('c30-label').textContent='¡Tiempo! ¿Cuántos completaste?';}},1000);
+}
+
+// ── 100 USES ──
+const OBJS=['🧱 Un ladrillo','📎 Un clip','🧴 Botella plástico','✏️ Un lápiz','📦 Caja de cartón','🪑 Una silla','🧃 Un popote','🔑 Una llave vieja','🪣 Un balde','🧻 Rollo de papel'];
+let usosInt=null;
+function newObj(){document.getElementById('obj-display').textContent=OBJS[Math.floor(Math.random()*OBJS.length)];}
+function startUsos(){
+  if(usosInt){clearInterval(usosInt);usosInt=null;document.getElementById('usos-btn').textContent='Iniciar';document.getElementById('usos-timer').textContent='05:00';document.getElementById('usos-label').textContent='Presiona iniciar';return;}
+  let t=300;document.getElementById('usos-btn').textContent='Detener';
+  usosInt=setInterval(()=>{t--;const m=Math.floor(t/60),s=t%60;document.getElementById('usos-timer').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');if(t<=0){clearInterval(usosInt);usosInt=null;document.getElementById('usos-btn').textContent='Reiniciar';document.getElementById('usos-label').textContent='¡Tiempo! ¿Cuántos son inusuales?';}},1000);
+}
+
+// ── COMBINACIONES ──
+const COMBOS=[['Submarino','Biblioteca'],['Hospital','Videojuego'],['Cocina','Aeropuerto'],['Jardín','Software'],['Escuela','Banco'],['Barco','Ciudad'],['Música','Arquitectura'],['Medicina','Poesía'],['Fútbol','Ingeniería'],['Meditación','Construcción'],['Teatro','Finanzas'],['Astronomía','Cocina'],['Zoológico','Universidad'],['Circo','Farmacia'],['Cementerio','Supermercado']];
+function newCombo(){const c=COMBOS[Math.floor(Math.random()*COMBOS.length)];document.getElementById('combo-display').textContent=c[0]+' + '+c[1];}
+newCombo();
+
+// ── 5 PORQUÉS ──
+let pqCount=1;
+function renderPorques(){
+  const c=document.getElementById('pq-container');c.innerHTML='';
+  const labels=['El problema inicial...','Porque...','Porque...','Porque...','Causa raíz...'];
+  const nums=['Problema','Por qué #1','Por qué #2','Por qué #3','Por qué #4 — Causa raíz'];
+  for(let i=0;i<pqCount;i++){
+    const d=document.createElement('div');d.className='pq-step';
+    d.innerHTML=`<div class="pq-num">${nums[i]}</div><input type="text" placeholder="${labels[i]}">`;
+    c.appendChild(d);
+  }
+}
+function addPorque(){
+  if(pqCount>=5){const r=document.getElementById('pq-result');r.textContent='¡Llegaste a la causa raíz! Revisa el último por qué — ahí suele estar el problema real a resolver.';r.classList.add('show');document.getElementById('pq-add').disabled=true;return;}
+  pqCount++;renderPorques();
+  document.querySelector('#pq-container .pq-step:last-child input').focus();
+}
+function resetPorques(){pqCount=1;renderPorques();document.getElementById('pq-result').classList.remove('show');document.getElementById('pq-add').disabled=false;}
+renderPorques();
+
+// ── BRAINSTORM ──
+const TEMAS=['Ideas para mejorar la comunicación en equipos de trabajo','Formas de reducir el desperdicio en obras de construcción','Maneras de aprender algo nuevo en 15 minutos al día','Formas en que la IA podría cambiar tu profesión','Ideas para hacer reuniones de trabajo más efectivas','Formas de motivar a un equipo sin dinero','Maneras de simplificar un proceso complejo','Ideas para mejorar la experiencia de un cliente insatisfecho','Usos para el tiempo libre entre reuniones'];
+function newTema(){document.getElementById('bstorm-tema').textContent=TEMAS[Math.floor(Math.random()*TEMAS.length)];}
+let bsInt=null;
+function startBstorm(){
+  if(bsInt){clearInterval(bsInt);bsInt=null;document.getElementById('bstorm-btn').textContent='Iniciar';document.getElementById('bstorm-timer').textContent='02:00';document.getElementById('bstorm-label').textContent='Presiona iniciar';return;}
+  let t=120;document.getElementById('bstorm-btn').textContent='Detener';document.getElementById('bstorm-area').focus();
+  bsInt=setInterval(()=>{t--;const m=Math.floor(t/60),s=t%60;document.getElementById('bstorm-timer').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  if(t<=0){clearInterval(bsInt);bsInt=null;document.getElementById('bstorm-label').textContent='¡Tiempo!';document.getElementById('bstorm-btn').textContent='Reiniciar';const lines=document.getElementById('bstorm-area').value.split('\n').filter(l=>l.trim()).length;const res=document.getElementById('bstorm-res');res.textContent=`Generaste ~${lines} ideas en 2 minutos. Principiante: 8–12. Avanzado: 20+.`;res.classList.add('show');}},1000);
+}
+
+// ── REFORMULACIÓN ──
+const REFRAMES=['"No tenemos suficiente tiempo para terminar esto."','"El cliente rechazó nuestra propuesta."','"Cometí un error grave en el proyecto."','"No tenemos presupuesto para la solución ideal."','"El equipo no está alineado en la dirección del proyecto."','"Perdimos a un colaborador clave del equipo."','"La tecnología que usamos está quedando obsoleta."','"El modelo BIM fue devuelto con demasiadas observaciones."'];
+function newReframe(){document.getElementById('reframe-prompt').textContent=REFRAMES[Math.floor(Math.random()*REFRAMES.length)];}
+newReframe();
+
+// ── SCENE ──
+const EMOJIS_POOL=['🍎','🚗','📚','🎸','🌵','🦜','🎩','🔑','🕯️','🎯','🧪','🌺','🎲','🧲','🔔','🎁','🦋','🍕','🧸','💡','🌙','🎠','🐢','🌈'];
+let sceneItems=[],scenePh='idle',scInt=null;
+function newScene(){
+  scenePh='idle';clearInterval(scInt);
+  document.getElementById('scene-btn').textContent='Iniciar';
+  document.getElementById('scene-status').textContent='Presiona iniciar';
+  document.getElementById('scene-timer').textContent='—';
+  document.getElementById('scene-recall').style.display='none';
+  document.getElementById('scene-result').classList.remove('show');
+  renderScene();
+}
+function renderScene(){
+  sceneItems=[...EMOJIS_POOL].sort(()=>Math.random()-.5).slice(0,8);
+  const wrap=document.getElementById('scene-wrap');wrap.innerHTML='';
+  sceneItems.forEach(e=>{const d=document.createElement('div');d.className='scene-item';d.style.cssText=`left:${8+Math.random()*72}%;top:${8+Math.random()*65}%;`;d.textContent=e;wrap.appendChild(d);});
+}
+function sceneAction(){
+  if(scenePh==='idle'){
+    renderScene();scenePh='observing';let t=15;
+    document.getElementById('scene-btn').textContent='Observando...';
+    document.getElementById('scene-status').textContent='¡Memoriza posición y objetos!';
+    scInt=setInterval(()=>{t--;document.getElementById('scene-timer').textContent=t;
+    if(t<=0){clearInterval(scInt);scenePh='idle';document.getElementById('scene-wrap').innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:14px;color:var(--text3)">Escena oculta</div>';document.getElementById('scene-timer').textContent='—';document.getElementById('scene-status').textContent='Selecciona los objetos que estaban';document.getElementById('scene-btn').textContent='Nueva escena';showRecall();}},1000);
+  }else{newScene();}
+}
+function showRecall(){
+  const dist=EMOJIS_POOL.filter(e=>!sceneItems.includes(e)).sort(()=>Math.random()-.5).slice(0,8);
+  const all=[...sceneItems,...dist].sort(()=>Math.random()-.5);
+  const g=document.getElementById('recall-grid');g.innerHTML='';
+  all.forEach(e=>{const d=document.createElement('div');d.className='recall-item';d.textContent=e;d.dataset.e=e;d.dataset.sel='0';d.onclick=()=>{d.dataset.sel=d.dataset.sel==='0'?'1':'0';d.classList.toggle('sel',d.dataset.sel==='1');};g.appendChild(d);});
+  document.getElementById('scene-recall').style.display='block';
+}
+function checkScene(){
+  let correct=0,wrong=0;
+  document.querySelectorAll('.recall-item').forEach(d=>{const inS=sceneItems.includes(d.dataset.e),sel=d.dataset.sel==='1';if(sel&&inS){d.classList.add('correct');correct++;}else if(sel&&!inS){d.classList.add('wrong');wrong++;}});
+  const missed=sceneItems.length-correct;
+  const res=document.getElementById('scene-result');
+  res.textContent=`✓ ${correct} correctos · ✗ ${wrong} erróneos · ${missed} no marcados. Puntuación: ${Math.max(0,Math.round((correct-wrong)/sceneItems.length*100))}%`;
+  res.classList.add('show');
+}
+newScene();
+
+// ── GRID ──
+const COLORS=['#5DCAA5','#378ADD','#E24B4A','#EF9F27','#D4537E','#97C459','#7F77DD','#D85A30'];
+let gridA=[],gridChanges=[],gridPh='pre';
+function newGrid(){
+  gridPh='pre';document.getElementById('grid-btn').textContent='Revelar B';document.getElementById('grid-status').textContent='Memoriza A, luego revela B';
+  document.getElementById('grid-b').style.filter='blur(8px)';document.getElementById('grid-b').style.pointerEvents='none';
+  document.getElementById('grid-result').classList.remove('show');
+  gridA=Array.from({length:16},()=>COLORS[Math.floor(Math.random()*COLORS.length)]);
+  const gridB=[...gridA];gridChanges=[];
+  [...Array(16).keys()].sort(()=>Math.random()-.5).slice(0,3+Math.floor(Math.random()*3)).forEach(i=>{gridB[i]=COLORS.filter(c=>c!==gridB[i])[Math.floor(Math.random()*(COLORS.length-1))];gridChanges.push(i);});
+  renderCG('grid-a',gridA);renderCG('grid-b',gridB);
+}
+function renderCG(id,cols){const g=document.getElementById(id);g.innerHTML='';cols.forEach(c=>{const d=document.createElement('div');d.className='color-cell';d.style.background=c;g.appendChild(d);});}
+function gridAction(){
+  if(gridPh==='pre'){document.getElementById('grid-b').style.filter='none';document.getElementById('grid-b').style.pointerEvents='auto';document.getElementById('grid-btn').textContent='Ver solución';document.getElementById('grid-status').textContent=`Hay ${gridChanges.length} cambios`;gridPh='reveal';}
+  else{const r=document.getElementById('grid-result');r.textContent=`Los ${gridChanges.length} cambios: ${gridChanges.map(i=>`fila ${Math.floor(i/4)+1} col ${(i%4)+1}`).join(', ')}`;r.classList.add('show');gridPh='pre';document.getElementById('grid-btn').textContent='Revelar B';}
+}
+newGrid();
+
+// ── DIGITS ──
+let digLevel=3,digPh='show',digSeq='';
+function resetDigit(){digLevel=3;digPh='show';document.getElementById('digit-level').textContent='Nivel 1 — 3 dígitos';document.getElementById('digit-display').textContent='—';document.getElementById('digit-input').style.display='none';document.getElementById('digit-btn').textContent='Mostrar';document.getElementById('digit-result').classList.remove('show');}
+function digitAction(){
+  const res=document.getElementById('digit-result');
+  if(digPh==='show'){digSeq=Array.from({length:digLevel},()=>Math.floor(Math.random()*10)).join('');document.getElementById('digit-display').textContent=digSeq;document.getElementById('digit-input').style.display='none';document.getElementById('digit-btn').textContent='Ocultar';res.classList.remove('show');digPh='hide';}
+  else if(digPh==='hide'){document.getElementById('digit-display').textContent='?'.repeat(digLevel);const inp=document.getElementById('digit-input');inp.style.display='block';inp.value='';inp.focus();document.getElementById('digit-btn').textContent='Verificar';digPh='check';}
+  else{const ans=document.getElementById('digit-input').value.trim().replace(/\s/g,'');if(ans===digSeq){res.style.borderLeftColor='var(--teal)';res.textContent=`✓ Correcto (${digSeq}) — Subiendo a ${digLevel+1} dígitos.`;digLevel=Math.min(digLevel+1,15);}else{res.style.borderLeftColor='var(--coral)';res.textContent=`✗ Era: ${digSeq} · Escribiste: ${ans}. Sigue en ${digLevel} dígitos.`;}res.classList.add('show');document.getElementById('digit-level').textContent=`Nivel — ${digLevel} dígitos`;document.getElementById('digit-display').textContent='—';document.getElementById('digit-input').style.display='none';document.getElementById('digit-btn').textContent='Mostrar';digPh='show';}
+}
+
+// ── PALACE ──
+let loci=['','','','',''];
+function renderLoci(){
+  const c=document.getElementById('palace-loci');c.innerHTML='';
+  loci.forEach((l,i)=>{const d=document.createElement('div');d.className='palace-row';d.innerHTML=`<div class="palace-n">${i+1}</div><div style="flex:1"><input type="text" style="min-height:unset;height:42px;margin:0;width:100%;font-size:14px" placeholder="Punto ${i+1}..." value="${l}" oninput="loci[${i}]=this.value"></div>`;c.appendChild(d);});
+}
+function addLocus(){loci.push('');renderLoci();}
+function showPalaceDemo(){
+  const demo=document.getElementById('palace-demo');
+  const items=[['Reunión con Andres','Un casco BIM gigante rodando por la entrada y aplastando todo'],['Entregar modelo Revit','El modelo 3D bailando salsa encima del escritorio'],['Revisar tubería','Un pulpo con llaves inglesas tapando el grifo de la cocina'],['Coordinar contratista','El contratista atrapado dentro de la nevera hablando por radio'],['Enviar informe LMED','Un papel enrollado disparado por la ventana como cohete']];
+  demo.innerHTML='<div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:10px">Ejemplo — Tareas del día:</div>'+items.map(([t,img],i)=>`<div class="palace-row"><div class="palace-n">${i+1}</div><div><div class="palace-loc-name">${t}</div><div class="palace-img">${img}</div></div></div>`).join('');
+  demo.style.display='block';
+}
+renderLoci();
+
+// ── CHAIN ──
+const CHAIN_POOL=['elefante','cohete','sombrero','mermelada','escalera','violín','nube','zapato','cactus','espejo','brújula','volcán','pulpo','linterna','mariposa','castillo','heladero','tiburón','paraguas','bicicleta'];
+function genChain(){const sel=[...CHAIN_POOL].sort(()=>Math.random()-.5).slice(0,10);document.getElementById('chain-words').innerHTML=sel.map(w=>`<span class="chip">${w}</span>`).join('');}
+genChain();
+
+// ── WORDS ──
+const WORD_POOL=['bicicleta','cascada','telescopio','naranja','columna','brújula','sardina','ventana','reloj','paraguas','montaña','espejo','ciudad','lámpara','cocodrilo','escalera','planeta','guitarra','botella','mariposa','carretera','cuchara'];
+let wordList=[],wordsInt=null,wordsPh='idle';
+function newWords(){
+  wordList=[...WORD_POOL].sort(()=>Math.random()-.5).slice(0,12);wordsPh='idle';clearInterval(wordsInt);
+  document.getElementById('words-timer').textContent='01:00';document.getElementById('words-status').textContent='Presiona iniciar y memoriza';
+  document.getElementById('words-btn').textContent='Iniciar';document.getElementById('words-btn').style.display='inline-block';
+  document.getElementById('words-input').value='';document.getElementById('words-input').disabled=true;
+  document.getElementById('words-check').style.display='none';document.getElementById('words-result').classList.remove('show');
+  document.getElementById('words-display').innerHTML=wordList.map(w=>`<span class="chip">${w}</span>`).join('');
+}
+function wordsAction(){
+  if(wordsPh!=='idle')return;wordsPh='memorize';let t=60;document.getElementById('words-btn').textContent='...';
+  wordsInt=setInterval(()=>{t--;const m=Math.floor(t/60),s=t%60;document.getElementById('words-timer').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  if(t<=0){clearInterval(wordsInt);document.getElementById('words-display').innerHTML='<span style="font-size:13px;color:var(--text3)">Lista oculta — escríbelas en orden</span>';document.getElementById('words-status').textContent='';document.getElementById('words-input').disabled=false;document.getElementById('words-input').focus();document.getElementById('words-check').style.display='block';document.getElementById('words-btn').style.display='none';wordsPh='recall';}},1000);
+}
+function checkWords(){
+  const ans=document.getElementById('words-input').value.trim().split(/[\n,]+/).map(s=>s.trim().toLowerCase()).filter(Boolean);
+  let correct=0;wordList.forEach((w,i)=>{if(ans[i]&&ans[i]===w.toLowerCase())correct++;});
+  const res=document.getElementById('words-result');
+  res.style.borderLeftColor=correct>=9?'var(--teal)':correct>=6?'var(--gold)':'var(--coral)';
+  res.textContent=`Recordaste ${correct} de 12 en orden. ${correct<=4?'Principiante — prueba con el palacio de memoria.':correct<=8?'Intermedio — sigue con historias encadenadas.':'¡Excelente! Intenta con 16 palabras.'}  Lista: ${wordList.join(', ')}`;
+  res.classList.add('show');
+}
+newWords();
+</script>
+</body>
+</html>
