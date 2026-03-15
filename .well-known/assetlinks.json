@@ -1,8 +1,0 @@
-[{
-  "relation": ["delegate_permission/common.handle_all_urls"],
-  "target": {
-    "namespace": "android_app",
-    "package_name": "io.github.asdosandbox.twa",
-    "sha256_cert_fingerprints": ["1C:5B:EA:30:32:3D:16:32:F6:04:46:A9:0F:A6:AC:86:1E:18:0E:7F:D4:F5:2C:C6:DA:AE:F1:9A:E1:A8:6B:30"]
-  }
-}]
